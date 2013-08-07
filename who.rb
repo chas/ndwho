@@ -1,5 +1,5 @@
 require 'sinatra'
-require 'net/ldap'
+require 'net-ldap'
 
 def ldap_connect
   ldap = Net::LDAP.new :host => "directory.nd.edu",
@@ -12,8 +12,8 @@ end
 
 def lookup(entity,entity_type)
 
-  if entity_type = "email" then filter_type = "ndMail"
-  if entity_type = "netid" then filter_type = "uid"
+  if entity_type == "email" then filter_type = "ndMail" end
+  if entity_type == "netid" then filter_type = "uid" end
 
   filter = Net::LDAP::Filter.eq(filter_type, entity)
 

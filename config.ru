@@ -1,3 +1,3 @@
-require "relay"
+require "who"
 
 run Sinatra::Application

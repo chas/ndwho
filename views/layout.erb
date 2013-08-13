@@ -12,6 +12,39 @@
 	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
 	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 	<link href="http://code.jquery.com/ui/1.10.3/themes/flick/jquery-ui.css" rel="stylesheet">	
+	<script>
+		$(document).ready(function() {
+			$('#expand-missing').click(
+						function(){
+							$('#missing').show();
+						}
+					);
+			$('#expand-dupes').click(
+						function(){
+							$('#dupes').show();
+						}
+					);
+			$(function() {
+			  $( "#tabs" ).tabs();
+			});
+
+
+			$("a#checkall").click(
+						function(){
+							$("input:checkbox").prop('checked', true);
+							return false;
+						}
+			);
+			$("a#uncheckall").click(
+						function(){
+							$("input:checkbox").prop('checked', false);
+							return false;
+						}
+			);
+
+		});
+	</script>
+
 </head>
 
 <body>

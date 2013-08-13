@@ -1,8 +1,9 @@
 header {}
 #logo {margin:20px auto;display:block;}
 p {margin-top:22px;}
-label {}
-table td {text-align:left;}
+label {display:block;}
+table td {text-align:left;padding:4px;}
+table tr:hover {background:#f1f1f1;}
 table.results {border-collapse: collapse;}
 table.results td {border:1px solid;}
 #dupes, #missing {display:none;border:1px solid;padding:10px;}

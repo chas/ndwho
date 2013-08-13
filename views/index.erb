@@ -1,26 +1,17 @@
-<!-- <script>
-	$(document).ready(function() {
-		$('#checkall').click(
-					function(){
-						$('#attributes input').prop('checked', true);
-					}
-				);
-	}
-</script> -->
+
 <form action="/" method="POST">
 <p>
 	<label for="entities">Paste your list of NetIDs or email addresses here. One per line please.</label><br />
 	<textarea name="entities" id="entities" rows="10" cols="15" /></textarea>
 </p>
 
-<p>
-	<label>This list is made up of:</label>
-	<label><input type="radio" name="entity_type" value="netid" checked /> NetIDs</label>
+	<h4>This list is made up of:</h4>
+<p>	<label><input type="radio" name="entity_type" value="netid" checked /> NetIDs</label>
 	<label><input type="radio" name="entity_type" value="email" /> Email Addresses</label>
 </p>
 
-<label>I want these fields back:</label>
-<!-- <p><a href="javascript:void();" id="checkall">Check all</a></p> -->
+<h4>I want these fields back:</h4>
+<p><a href="#" id="checkall">Check all</a> | <a href="#" id="uncheckall">Uncheck all</a></p>
 <table id="attributes">
 	<tr><th>Field</th><th>LDAP Attribute</th></tr>
 	<tr><td><label><input type="checkbox" name="attributes[]" value="uid"> NetID</label></td><td>uid</td></tr>

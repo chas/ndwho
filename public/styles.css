@@ -1,7 +1,9 @@
-body {background:#444444;width:100%;height:100%;}
-#main {margin:20px;background:#fff;border-radius:10px;margin:10% auto 20%; font-size:100%;font-family:Helvetica Neue,Helvetica,Arial,sans,sans-serif;padding:30px;}
+header {}
+#logo {margin:20px auto;display:block;}
 p {margin-top:22px;}
 label {}
 table td {text-align:left;}
 table.results {border-collapse: collapse;}
 table.results td {border:1px solid;}
+#dupes, #missing {display:none;border:1px solid;padding:10px;}
+#tabs div {overflow:scroll;}

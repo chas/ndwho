@@ -1,9 +1,16 @@
-<h1 style="font-size:24px">NDWho?</h1>
-
+<!-- <script>
+	$(document).ready(function() {
+		$('#checkall').click(
+					function(){
+						$('#attributes input').prop('checked', true);
+					}
+				);
+	}
+</script> -->
 <form action="/" method="POST">
 <p>
 	<label for="entities">Paste your list of NetIDs or email addresses here. One per line please.</label><br />
-	<textarea name="entities" id="entities" rows="20" cols="15" /></textarea>
+	<textarea name="entities" id="entities" rows="10" cols="15" /></textarea>
 </p>
 
 <p>
@@ -13,7 +20,8 @@
 </p>
 
 <label>I want these fields back:</label>
-<table>
+<!-- <p><a href="javascript:void();" id="checkall">Check all</a></p> -->
+<table id="attributes">
 	<tr><th>Field</th><th>LDAP Attribute</th></tr>
 	<tr><td><label><input type="checkbox" name="attributes[]" value="uid"> NetID</label></td><td>uid</td></tr>
 	<tr><td><label><input type="checkbox" name="attributes[]" value="displayName"> Name</label></td><td>displayName</td></tr>	
@@ -34,14 +42,14 @@
 </table>
 </p>
 
-<h3>I want the app to:</h3>
+<!-- <h3>I want the app to:</h3>
 <p>
 	<label><input type="checkbox" name="helpme[]" value="duplicates"> Remove duplicates</label>
 	<label><input type="checkbox" name="helpme[]" value="remove"> Remove records that don't have a match</label>
-</p>
+</p> -->
 
 <p>
-<input type="submit" value="Search" />
+<input type="submit" value="Search" class="btn btn-primary btn-large" />
 </p>
 </form>
 

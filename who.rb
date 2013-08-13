@@ -3,13 +3,6 @@ require 'net-ldap'
 
 enable :sessions
 
-@@missing = []
-@@duplicates = []
-@@entities = []
-@@entity_type = []
-@@original_entities = []
-@@attributes = []
-
 def lookup(entity,entity_type)
 
   if entity_type == "email" then filter_type = "ndMail" end
@@ -17,7 +10,7 @@ def lookup(entity,entity_type)
 
   filter = Net::LDAP::Filter.eq(filter_type, entity)
 
-  results = LDAP.search(:filter => filter)
+  results = @@ldap.search(:filter => filter)
   if results && results.size == 0
     @@missing << entity
   else
@@ -26,7 +19,7 @@ def lookup(entity,entity_type)
 
 end
 
-LDAP = Net::LDAP.new :host => "directory.nd.edu",
+@@ldap = Net::LDAP.new :host => "directory.nd.edu",
   :port => 636,
   :base => "o=University of Notre Dame,st=Indiana,c=US",
   :encryption => :simple_tls,
@@ -38,7 +31,7 @@ def ldap_connect(netid,pass)
     session[:username] = ""
     userdn = ""
     filter = Net::LDAP::Filter.eq('uid', netid)
-    entries = LDAP.search(:filter => filter)
+    entries = @@ldap.search(:filter => filter)
     if entries && entries.size > 0
       for entry in entries
           userdn = entry.dn
@@ -48,11 +41,11 @@ def ldap_connect(netid,pass)
   if userdn == ""
     return false
   else
-    LDAP.authenticate(userdn,pass)
-    LDAP.bind
+    @@ldap.authenticate(userdn,pass)
+    @@ldap.bind
   end
 
-  if LDAP.get_operation_result.code == 0
+  if @@ldap.get_operation_result.code == 0
     session[:username] = netid
     $logged_in = true
     true
@@ -74,7 +67,16 @@ get '/' do
 end
 
 post '/' do
+  @@missing = []
+  @@duplicates = []
+  @@entities = []
+  @@entity_type = []
+  @@original_entities = []
+  @@attributes = []
+
+
   check_login
+
   @@entity_type = params[:entity_type]
   @@original_entities = params[:entities].split("\r\n")
   @@attributes = params[:attributes]
@@ -84,7 +86,6 @@ post '/' do
   end
 
   redirect '/results'
-  # erb :results
 end
 
 get '/results' do
@@ -99,7 +100,7 @@ get '/csv' do
 end
 
 get '/xls' do
-  check_login
+  check_login 
   headers "Content-Disposition" => "attachment;filename=ndwho#{Time.now.strftime("%m-%d-%Y-%I-%M%p")}.xls", "Content-Type" => "application/vnd.ms-excel"
   erb :xls, :layout => false
 end

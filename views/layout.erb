@@ -8,13 +8,17 @@
 	<meta name="author" content="">
 	<title>NDWho</title>
 	<link href="/styles.css" rel="stylesheet">
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js" ></script>
+	<link href="/bootstrap.css" rel="stylesheet">
+	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+	<link href="http://code.jquery.com/ui/1.10.3/themes/flick/jquery-ui.css" rel="stylesheet">	
 </head>
 
 <body>
-<div id="main">
-	<%= yield %>
-<span style="font-size:14px;"><%= Time.now.strftime("%m/%d/%Y at %I:%M%p") %></span>
+<header><a href="/"><img src="/ndwho-logo.png" id="logo"></a></header>
+<div class="container">
+		<%= yield %>
+		<span style="font-size:14px;"><%= Time.now.strftime("%m/%d/%Y at %I:%M%p") %></span>
 	<% if $logged_in %><p><a href="/logout">Logout</a> of <%= session[:username] %></p><% end %>
 </div>
 

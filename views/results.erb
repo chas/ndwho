@@ -1,0 +1,39 @@
+<h1>Results</h1>
+
+<h3>Summary</h3>
+<ul>
+<li><%= @@original_entities.size %> entities supplied</li>
+<li><%= @@entities.size %> entities found</li>
+<li><%= @@missing.size %> entities missing</li>
+<li><%= @@duplicates.size %> duplicates</li>
+</ul>
+
+<h3>Download full results as</h3>
+<ul class="button-links">
+	<li><a href="/xls">Excel XLS</a></li>
+	<li><a href="/csv">CSV</a></li>
+</ul>
+
+<h3>First 20 results</h3>
+
+<table class="results">
+<tr>
+	<% for attribute in @@attributes %>
+		<th><%= attribute %></th>
+	<% end %>
+</tr>		
+<% 
+	@@entities.take(20).each { |entity| 
+%>
+<tr>
+
+	<%
+	for attribute in @@attributes
+	%>
+		<td><%= entity[0][attribute.to_sym].join(",") %></td>
+	<%
+	end
+	%>
+</tr>
+<% } %>
+</table>

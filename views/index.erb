@@ -2,13 +2,13 @@
 
 <form action="/" method="POST">
 <p>
-	<label for="entities">Paste your list of NetIDs or email addresses here. One per line please.</label>
-	<textarea name="entities" id="entities" /></textarea>
+	<label for="entities">Paste your list of NetIDs or email addresses here. One per line please.</label><br />
+	<textarea name="entities" id="entities" rows="20" cols="15" /></textarea>
 </p>
 
 <p>
 	<label>This list is made up of:</label>
-	<label><input type="radio" name="entity_type" value="netid" /> NetIDs</label>
+	<label><input type="radio" name="entity_type" value="netid" checked /> NetIDs</label>
 	<label><input type="radio" name="entity_type" value="email" /> Email Addresses</label>
 </p>
 
@@ -16,7 +16,7 @@
 <table>
 	<tr><th>Field</th><th>LDAP Attribute</th></tr>
 	<tr><td><label><input type="checkbox" name="attributes[]" value="uid"> NetID</label></td><td>uid</td></tr>
-	<tr><td><label><input type="checkbox" name="attributes[]" value="name"> Name</label></td><td>displayName</td></tr>
+	<tr><td><label><input type="checkbox" name="attributes[]" value="displayName"> Name</label></td><td>displayName</td></tr>	
 	<tr><td><label><input type="checkbox" name="attributes[]" value="mail"> Preferred Email</label></td><td>mail</td></tr>
 	<tr><td><label><input type="checkbox" name="attributes[]" value="ndMail"> All Email Addresses</label></td><td>ndMail</td></tr>
 	<tr><td><label><input type="checkbox" name="attributes[]" value="ndPrimaryAffiliation"> Affiliation</label></td><td>ndPrimaryAffiliation</td></tr>

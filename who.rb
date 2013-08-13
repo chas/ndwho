@@ -1,44 +1,14 @@
 require 'sinatra'
 require 'net-ldap'
 
-def check_login
-  if session[:username] == ""
-    redirect "/login"
-  end
-end
+enable :sessions
 
-def ldap_connect(netid,pass)
-  ldap = Net::LDAP.new :host => "directory.nd.edu",
-    :port => 636,
-    :base => "o=University of Notre Dame,st=Indiana,c=US",
-    :encryption => :simple_tls,
-    :auth => { 
-      :method => :anonymous
-    }
-    userdn = ""
-    filter = Net::LDAP::Filter.eq('uid', netid)
-    entries = ldap.search(:filter => filter)
-    if entries.size > 0
-      for entry in entries
-          userdn = entry.dn
-      end
-    end
-
-  if userdn == ""
-    return false
-  else
-    ldap.authenticate(userdn,pass)
-    ldap.bind
-  end
-
-  if ldap.get_operation_result.code == 0
-    session[:username] = netid
-    true
-  else
-    session[:username] = ""
-    false
-  end
-end
+@@missing = []
+@@duplicates = []
+@@entities = []
+@@entity_type = []
+@@original_entities = []
+@@attributes = []
 
 def lookup(entity,entity_type)
 
@@ -47,8 +17,54 @@ def lookup(entity,entity_type)
 
   filter = Net::LDAP::Filter.eq(filter_type, entity)
 
-  ldap.search(:filter => filter) do |entry|
-    puts "#{entry.uid},#{entry.ndPrimaryAffiliation}\n"    
+  results = LDAP.search(:filter => filter)
+  if results && results.size == 0
+    @@missing << entity
+  else
+    @@entities << results
+  end
+
+end
+
+LDAP = Net::LDAP.new :host => "directory.nd.edu",
+  :port => 636,
+  :base => "o=University of Notre Dame,st=Indiana,c=US",
+  :encryption => :simple_tls,
+  :auth => { 
+    :method => :anonymous
+  }
+
+def ldap_connect(netid,pass)
+    session[:username] = ""
+    userdn = ""
+    filter = Net::LDAP::Filter.eq('uid', netid)
+    entries = LDAP.search(:filter => filter)
+    if entries && entries.size > 0
+      for entry in entries
+          userdn = entry.dn
+      end
+    end
+
+  if userdn == ""
+    return false
+  else
+    LDAP.authenticate(userdn,pass)
+    LDAP.bind
+  end
+
+  if LDAP.get_operation_result.code == 0
+    session[:username] = netid
+    $logged_in = true
+    true
+  else
+    $logged_in = false
+    false
+  end
+end
+
+def check_login
+  if session[:username] == "" || session[:username].nil?
+    redirect "/login"
   end
 end
 
@@ -58,25 +74,48 @@ get '/' do
 end
 
 post '/' do
-  entity_type = params[:entity_type]
-  entities = params[:entities]
-  attributes = params[:attributes]
+  check_login
+  @@entity_type = params[:entity_type]
+  @@original_entities = params[:entities].split("\r\n")
+  @@attributes = params[:attributes]
 
-  #  pseudocode here
-  #  @entities = stuff
-  #  @attributes = stuff
-  #
-  # Do lookups
-  # Get attributes
-  # Redirect to results page
+  for entity in @@original_entities
+    lookup(entity,@@entity_type)
+  end
 
+  redirect '/results'
+  # erb :results
 end
 
+get '/results' do
+  check_login
+  erb :results
+end
+
+get '/csv' do
+  check_login
+  headers "Content-Disposition" => "attachment;filename=ndwho#{Time.now.strftime("%m-%d-%Y-%I-%M%p")}.csv", "Content-Type" => "application/octet-stream"
+  erb :csv, :layout => false
+end
+
+get '/xls' do
+  check_login
+  headers "Content-Disposition" => "attachment;filename=ndwho#{Time.now.strftime("%m-%d-%Y-%I-%M%p")}.xls", "Content-Type" => "application/vnd.ms-excel"
+  erb :xls, :layout => false
+end
+
+
 get '/login' do
-  if session[:username] != ""
+  if $logged_in
     redirect '/'
   end
   erb :login
+end
+
+get '/logout' do
+  session[:username] = ""
+  $logged_in = false
+  redirect '/login'
 end
 
 post '/login' do

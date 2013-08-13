@@ -1,0 +1,20 @@
+<table>
+<tr>
+	<% for attribute in @@attributes %>
+		<th><%= attribute %></th>
+	<% end %>
+</tr>		
+<% 
+	@@entities.each { |entity| 
+%>
+<tr>
+	<%
+	for attribute in @@attributes
+	%>
+		<td><%= entity[0][attribute.to_sym].join(",") %></td>
+	<%
+	end
+	%>
+</tr>
+<% } %>
+</table>

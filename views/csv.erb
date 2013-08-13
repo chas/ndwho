@@ -1,0 +1,12 @@
+<%= @@attributes.join(",") %>
+<% 
+for entity in @@entities
+	record = []
+	for attribute in @@attributes
+		record << "\"#{entity[0][attribute.to_sym].join(",")}\""
+	end
+	%>
+	<%= "#{record.join(',')}" %>
+<% 
+end
+%>

@@ -1,0 +1,30 @@
+<h1 style="font-size:24px">NDWho?</h1>
+
+<%
+if params[:result] == "failed"
+%>
+<p class="error">Invalid login.</p>
+<%
+end
+%>
+<%
+if params[:result] == "required"
+%>
+<p class="error">Username and password are required.</p>
+<%
+end
+%>
+
+<form action="/login" method="POST">
+<p>
+	<label for="username">NetID</label>
+	<input type="text" name="username" id="username" />
+</p>
+<p>
+<label for="password">Password</label>
+<input type="password" name="password" id="password" />
+</p>
+<p>
+<input type="submit" value="Login" />
+</p>
+</form>

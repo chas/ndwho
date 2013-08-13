@@ -13,7 +13,8 @@
 
 <body>
 <div id="main">
-	<%= yield %>	
+	<%= yield %>
+<span style="font-size:14px;"><%= Time.now.strftime("%m/%d/%Y at %I:%M%p") %></span>
 </div>
 
 <script>

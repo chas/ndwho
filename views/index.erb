@@ -1,5 +1,50 @@
-<h1 style="font-size:24px">Who?</h1>
+<h1 style="font-size:24px">NDWho?</h1>
 
-<span style="font-size:14px;"><%= Time.now.strftime("%m/%d/%Y at %I:%M%p") %></span>
+<form action="/" method="POST">
+<p>
+	<label for="entities">Paste your list of NetIDs or email addresses here. One per line please.</label>
+	<textarea name="entities" id="entities" /></textarea>
+</p>
+
+<p>
+	<label>This list is made up of:</label>
+	<label><input type="radio" name="entity_type" value="netid" /> NetIDs</label>
+	<label><input type="radio" name="entity_type" value="email" /> Email Addresses</label>
+</p>
+
+<label>I want these fields back:</label>
+<table>
+	<tr><th>Field</th><th>LDAP Attribute</th></tr>
+	<tr><td><label><input type="checkbox" name="attributes[]" value="uid"> NetID</label></td><td>uid</td></tr>
+	<tr><td><label><input type="checkbox" name="attributes[]" value="name"> Name</label></td><td>displayName</td></tr>
+	<tr><td><label><input type="checkbox" name="attributes[]" value="mail"> Preferred Email</label></td><td>mail</td></tr>
+	<tr><td><label><input type="checkbox" name="attributes[]" value="ndMail"> All Email Addresses</label></td><td>ndMail</td></tr>
+	<tr><td><label><input type="checkbox" name="attributes[]" value="ndPrimaryAffiliation"> Affiliation</label></td><td>ndPrimaryAffiliation</td></tr>
+	<tr><td><label><input type="checkbox" name="attributes[]" value="departmentNumber"> Primary Department</label></td><td>departmentNumber</td></tr>
+	<tr><td><label><input type="checkbox" name="attributes[]" value="ndDepartment"> All Departments</label></td><td>ndDepartment</td></tr>
+	<tr><td><label><input type="checkbox" name="attributes[]" value="ndTopLevelPrimaryDepartment"> Division</label></td><td>ndTopLevelPrimaryDepartment</td></tr>
+	<tr><td><label><input type="checkbox" name="attributes[]" value="telephoneNumber"> Phone Number</label></td><td>telephoneNumber</td></tr>
+	<tr><td><label><input type="checkbox" name="attributes[]" value="title"> Primary Title</label></td><td>title</td></tr>
+	<tr><td><label><input type="checkbox" name="attributes[]" value="ndTitle"> All Titles</label></td><td>ndTitle</td></tr>
+	<tr><td><label><input type="checkbox" name="attributes[]" value="ndOfficeAddress"> Office Address</label></td><td>ndOfficeAddress</td></tr>
+	<tr><td><label><input type="checkbox" name="attributes[]" value="organization"> Organization?</label></td><td>(ndEntryCategory is not 'individual')</td></tr>
+	<tr><td><label><input type="checkbox" name="attributes[]" value="owner"> Account owner</label></td><td>owner</td></tr>
+	<tr><td><label><input type="checkbox" name="attributes[]" value="seeAlso"> See Also</label></td><td>seeAlso</td></tr>
+
+</table>
+</p>
+
+<h3>I want the app to:</h3>
+<p>
+	<label><input type="checkbox" name="helpme[]" value="duplicates"> Remove duplicates</label>
+	<label><input type="checkbox" name="helpme[]" value="remove"> Remove records that don't have a match</label>
+</p>
+
+<p>
+<input type="submit" value="Search" />
+</p>
+</form>
+
+
 	
 	

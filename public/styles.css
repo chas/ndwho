@@ -8,3 +8,4 @@ table.results {border-collapse: collapse;}
 table.results td {border:1px solid;}
 #dupes, #missing {display:none;border:1px solid;padding:10px;}
 #tabs div {overflow:scroll;}
+#progress-bar {margin-left:20px;display:none;}

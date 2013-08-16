@@ -3,14 +3,14 @@
 <%
 if params[:result] == "failed"
 %>
-<p class="error">Invalid login.</p>
+<div class="alert alert-error">Invalid login.</div>
 <%
 end
 %>
 <%
 if params[:result] == "required"
 %>
-<p class="error">Username and password are required.</p>
+<div class="alert alert-error">Username and password are required.</div>
 <%
 end
 %>

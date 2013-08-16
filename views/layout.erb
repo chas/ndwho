@@ -41,7 +41,11 @@
 							return false;
 						}
 			);
-
+			$("form#lookup").submit(
+						function(){
+							$("#progress-bar").show();
+						}
+			);
 		});
 	</script>
 

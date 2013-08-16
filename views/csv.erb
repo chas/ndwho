@@ -2,11 +2,15 @@
 <% 
 for entity in @@entities
 	record = []
-	for attribute in @@attributes
-		record << "\"#{entity[0][attribute.to_sym].join(",")}\""
+	if entity.kind_of?(Array)
+		for attribute in @@attributes
+			record << "\"#{entity[0]}\",\"#{entity[1][attribute.to_sym].join(",")}\""
+		end
+	else
+		record << "\"#{entity}\""
 	end
 	%>
-	<%= "#{record.join(',')}" %>
+<%= "#{record.join(',')}" %>
 <% 
 end
 %>

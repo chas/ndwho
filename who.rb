@@ -13,7 +13,9 @@ def lookup(entity,entity_type)
   results = @@ldap.search(:filter => filter)
   if results && results.size == 0
     @@missing << entity
+    @@entities << entity unless @@remove_missing
   else
+    results.insert(0,entity)
     @@entities << results
   end
 
@@ -70,16 +72,22 @@ post '/' do
   @@missing = []
   @@duplicates = []
   @@entities = []
+  @@remove_missing = false
   @@entity_type = []
   @@original_entities = []
   @@attributes = []
-
 
   check_login
 
   @@entity_type = params[:entity_type]
   @@original_entities = params[:entities].split("\r\n")
   @@attributes = params[:attributes]
+  
+  if params[:remove_missing] == "true"
+    @@remove_missing = true
+  else
+    @@remove_missing = false
+  end
 
   for entity in @@original_entities
     lookup(entity,@@entity_type)

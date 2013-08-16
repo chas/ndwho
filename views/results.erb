@@ -33,6 +33,7 @@
 		<h3>First 20 results</h3>
 		<table class="results">
 		<tr>
+				<th><%= @@entity_type %></th>
 			<% for attribute in @@attributes %>
 				<th><%= attribute %></th>
 			<% end %>
@@ -41,14 +42,18 @@
 			@@entities.take(20).each { |entity| 
 		%>
 		<tr>
-
+		<% if entity.kind_of?(Array) %>
+			<td><%= entity[0] %></td>
 			<%
 			for attribute in @@attributes
 			%>
-				<td><%= entity[0][attribute.to_sym].join(",") %></td>
+				<td><%= entity[1][attribute.to_sym].join(",") %></td>
 			<%
 			end
 			%>
+		<% else %>
+			<tr><td><%= entity %></td></tr>
+		<% end %>
 		</tr>
 		<% } %>
 		</table>

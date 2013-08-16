@@ -1,20 +1,27 @@
 <table>
 <tr>
+<th><%= @@entity_type %></th>
 	<% for attribute in @@attributes %>
-		<th><%= attribute %></th>
+<th><%= attribute %></th>
 	<% end %>
 </tr>		
 <% 
 	@@entities.each { |entity| 
 %>
+<% if entity.kind_of?(Array) %>
 <tr>
+<td><%= entity[0] %></td>
 	<%
 	for attribute in @@attributes
 	%>
-		<td><%= entity[0][attribute.to_sym].join(",") %></td>
+<td><%= entity[1][attribute.to_sym].join(",") %></td>
 	<%
 	end
 	%>
 </tr>
+<% else %>
+<tr><td><%= entity %></td></tr>
+<% end %>
+
 <% } %>
 </table>

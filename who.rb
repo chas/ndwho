@@ -1,7 +1,39 @@
 require 'sinatra'
 require 'net-ldap'
+require 'active_record'
+require 'active_support'
+require 'sqlite3'
 
 enable :sessions
+$stdout.sync = true
+
+ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => "who.db")
+Time.zone = "Eastern Time (US & Canada)"
+$TIMEZONE = 'America/New_York'
+$tz = TZInfo::Timezone.get($TIMEZONE)
+
+# begin
+#   # define database schema
+#   ActiveRecord::Schema.define do
+#     create_table :searches do |t|
+#       t.string :ip_address
+#       t.string :netid
+#       t.string :entities
+#       t.timestamps
+#     end
+#   end
+# rescue ActiveRecord::StatementInvalid
+# end
+
+error do
+  '' + request.env['sinatra.error'].message
+end
+
+
+# class Searches < ActiveRecord::Base
+# end
+
+
 
 def lookup(entity,entity_type)
 
@@ -89,9 +121,20 @@ post '/' do
     @@remove_missing = false
   end
 
+    # # log this search in database
+    # @search = Search.create(:ip_address => request.ip, :netid => session[:username], :entities => @@original_entities.size) 
+    # @search.save!
+
+  puts "Executing lookup on #{@@original_entities.size} entities by #{@@entity_type}"
+  idx = 0
   for entity in @@original_entities
+    idx = idx + 1
+    puts "  #{idx}: #{entity}"
     lookup(entity,@@entity_type)
   end
+  puts "Found: #{@@entities.size} of #{@@original_entities.size} entities"
+  puts "Missing: #{@@missing.size}"
+  puts "Duplicates: #{@@duplicates.size}" 
 
   redirect '/results'
 end

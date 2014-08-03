@@ -19,6 +19,7 @@
 	    <li><a href="#results">Results</a></li>
 	    <li><a href="#missing">Missing (<%= @@missing.size %>)</a></li>
 	    <li><a href="#dupes">Duplicates (<%= @@duplicates.size %>)</a></li>
+	    <li><a href="#orgs">Organizational (<%= @@organizationals.size %>)</a></li>
 	  </ul>
 	<div id="missing">
 		<h3>Missing Records</h3>
@@ -29,6 +30,11 @@
 		<h3>Duplicates</h3>
 		<textarea><%= @@duplicates.join("\n") %></textarea>
 	</div>
+	<div id="orgs">
+		<h3>Organizational/Departmental Accounts</h3>
+		<p>Based on presence of ndCSOSpecial attribute</p>
+		<textarea><%= @@organizationals.join("\n") %></textarea>
+	</div>
 	<div id="results">
 		<h3>First 20 results</h3>
 		<table class="results">
@@ -37,6 +43,7 @@
 			<% for attribute in @@attributes %>
 				<th><%= attribute %></th>
 			<% end %>
+				<th>Organizational/Departmental</th>
 		</tr>		
 		<% 
 			@@entities.take(20).each { |entity| 
@@ -51,6 +58,7 @@
 			<%
 			end
 			%>
+				<td><%= entity.last %></td>
 		<% else %>
 			<tr><td><%= entity %></td></tr>
 		<% end %>

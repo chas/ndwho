@@ -4,6 +4,7 @@
 	<% for attribute in @@attributes %>
 <th><%= attribute %></th>
 	<% end %>
+<th>Organizational/Departmental</th>
 </tr>		
 <% 
 	@@entities.each { |entity| 
@@ -18,6 +19,7 @@
 	<%
 	end
 	%>
+<td><%= entity.last %></td>
 </tr>
 <% else %>
 <tr><td><%= entity %></td></tr>

@@ -7,6 +7,7 @@ require 'sqlite3'
 enable :sessions
 $stdout.sync = true
 
+
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => "who.db")
 Time.zone = "Eastern Time (US & Canada)"
 $TIMEZONE = 'America/New_York'
@@ -33,8 +34,6 @@ end
 # class Searches < ActiveRecord::Base
 # end
 
-
-
 def lookup(entity,entity_type)
 
   if entity_type == "email" then filter_type = "ndMail" end
@@ -43,10 +42,17 @@ def lookup(entity,entity_type)
   filter = Net::LDAP::Filter.eq(filter_type, entity)
 
   results = @@ldap.search(:filter => filter)
+
   if results && results.size == 0
     @@missing << entity
     @@entities << entity unless @@remove_missing
   else
+    if results[0].respond_to?(:ndCSOspecial)
+      @@organizationals << entity
+      results.push(true)
+    else
+      results.push(false)
+    end
     results.insert(0,entity)
     @@entities << results
   end
@@ -108,6 +114,7 @@ post '/' do
   @@entity_type = []
   @@original_entities = []
   @@attributes = []
+  @@organizationals = []
 
   check_login
 
@@ -135,6 +142,7 @@ post '/' do
   puts "Found: #{@@entities.size} of #{@@original_entities.size} entities"
   puts "Missing: #{@@missing.size}"
   puts "Duplicates: #{@@duplicates.size}" 
+  puts "Organizational: #{@@organizationals.size}" 
 
   redirect '/results'
 end

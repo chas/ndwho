@@ -1,11 +1,12 @@
-<%= @@attributes.join(",") %>
+<%= @@entity_type%>,<%= @@attributes.join(",") %>,Organizational/Departmental
 <% 
 for entity in @@entities
 	record = []
 	if entity.kind_of?(Array)
-		for attribute in @@attributes
-			record << "\"#{entity[0]}\",\"#{entity[1][attribute.to_sym].join(",")}\""
-		end
+		# for attribute in @@attributes
+		# record << "\"#{entity[0]}\",\"#{@@attributes.collect{|att| entity[1][att.to_sym]}.join(",")}\",\"#{entity.last}\""
+		record << "\"#{[entity[0],@@attributes.collect{|att| entity[1][att.to_sym]},entity.last].flatten.join("\",\"")}\""
+		# end
 	else
 		record << "\"#{entity}\""
 	end

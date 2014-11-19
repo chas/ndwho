@@ -7,6 +7,8 @@ require 'sqlite3'
 enable :sessions
 $stdout.sync = true
 
+# was erroring out in local run - testing
+set :protection, :except => :session_hijacking
 
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => "who.db")
 Time.zone = "Eastern Time (US & Canada)"

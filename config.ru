@@ -1,3 +1,2 @@
-require "who"
-
+require "./who"
 run Sinatra::Application

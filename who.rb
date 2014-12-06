@@ -1,40 +1,26 @@
 require 'sinatra'
 require 'net-ldap'
-require 'active_record'
-require 'active_support'
-require 'sqlite3'
+require 'sinatra/cas/client'
 
 enable :sessions
+enable :logging
 $stdout.sync = true
 
-# was erroring out in local run - testing
-set :protection, :except => :session_hijacking
+register Sinatra::CAS::Client
 
-ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => "who.db")
-Time.zone = "Eastern Time (US & Canada)"
-$TIMEZONE = 'America/New_York'
-$tz = TZInfo::Timezone.get($TIMEZONE)
+  set :cas_base_url, 'https://login.nd.edu/cas'
+  set :service_url, 'http://localhost:5000'
+  set :console_debugging, true
 
-# begin
-#   # define database schema
-#   ActiveRecord::Schema.define do
-#     create_table :searches do |t|
-#       t.string :ip_address
-#       t.string :netid
-#       t.string :entities
-#       t.timestamps
-#     end
-#   end
-# rescue ActiveRecord::StatementInvalid
-# end
+  set :port, 443
+
+  # was erroring out in local run - testing
+  # set :protection, :except => :session_hijacking
 
 error do
   '' + request.env['sinatra.error'].message
 end
 
-
-# class Searches < ActiveRecord::Base
-# end
 
 def lookup(entity,entity_type)
 
@@ -69,37 +55,43 @@ end
     :method => :anonymous
   }
 
-def ldap_connect(netid,pass)
-    session[:username] = ""
-    userdn = ""
-    filter = Net::LDAP::Filter.eq('uid', netid)
-    entries = @@ldap.search(:filter => filter)
-    if entries && entries.size > 0
-      for entry in entries
-          userdn = entry.dn
-      end
-    end
-
-  if userdn == ""
-    return false
-  else
-    @@ldap.authenticate(userdn,pass)
-    @@ldap.bind
-  end
-
-  if @@ldap.get_operation_result.code == 0
-    session[:username] = netid
-    $logged_in = true
-    true
-  else
-    $logged_in = false
-    false
-  end
-end
+# def ldap_connect(netid,pass)
+#     session[:username] = ""
+#     userdn = ""
+#     filter = Net::LDAP::Filter.eq('uid', netid)
+#     entries = @@ldap.search(:filter => filter)
+#     if entries && entries.size > 0
+#       for entry in entries
+#           userdn = entry.dn
+#       end
+#     end
+# 
+#   if userdn == ""
+#     return false
+#   else
+#     @@ldap.authenticate(userdn,pass)
+#     @@ldap.bind
+#   end
+# 
+#   if @@ldap.get_operation_result.code == 0
+#     session[:username] = netid
+#     $logged_in = true
+#     logger.info "Connected to LDAP - authenticated as #{netid}"
+#     true
+#   else
+#     $logged_in = false
+#     logger.info "Connected to LDAP - unauthenticated"
+#     false
+#   end
+# end
 
 def check_login
-  if session[:username] == "" || session[:username].nil?
-    redirect "/login"
+  if authenticated?
+    # Do you want to come back to my place?
+    true
+  else
+    # "My hovercraft is full of eels."
+    authenticate
   end
 end
 
@@ -109,6 +101,8 @@ get '/' do
 end
 
 post '/' do
+  check_login
+  
   @@missing = []
   @@duplicates = []
   @@entities = []
@@ -118,11 +112,14 @@ post '/' do
   @@attributes = []
   @@organizationals = []
 
-  check_login
-
-  @@entity_type = params[:entity_type]
   @@original_entities = params[:entities].split("\r\n")
   @@attributes = params[:attributes]
+
+  if @@original_entities.first.include? "@"
+    @@entity_type = "email"
+  else
+    @@entity_type = "netid"
+  end
   
   if params[:remove_missing] == "true"
     @@remove_missing = true
@@ -130,9 +127,13 @@ post '/' do
     @@remove_missing = false
   end
 
-    # # log this search in database
-    # @search = Search.create(:ip_address => request.ip, :netid => session[:username], :entities => @@original_entities.size) 
-    # @search.save!
+    # log this search
+    query_log_entry = "#{Time.now},#{request.ip},#{session[settings.username_session_key]},#{@@original_entities.size},#{@@entity_type}"
+
+    # append query_log_entry to a file to be rotated
+    File.open('log/ndwho.log', 'a') do |f2|  
+      f2.puts "#{query_log_entry}\n"
+    end
 
   puts "Executing lookup on #{@@original_entities.size} entities by #{@@entity_type}"
   idx = 0
@@ -141,6 +142,7 @@ post '/' do
     puts "  #{idx}: #{entity}"
     lookup(entity,@@entity_type)
   end
+
   puts "Found: #{@@entities.size} of #{@@original_entities.size} entities"
   puts "Missing: #{@@missing.size}"
   puts "Duplicates: #{@@duplicates.size}" 
@@ -166,30 +168,7 @@ get '/xls' do
   erb :xls, :layout => false
 end
 
-
-get '/login' do
-  if $logged_in
-    redirect '/'
-  end
-  erb :login
-end
-
 get '/logout' do
-  session[:username] = ""
-  $logged_in = false
-  redirect '/login'
-end
-
-post '/login' do
-  username = params[:username]
-  password = params[:password]  
-  if username == "" or password == "" then
-    redirect '/login?result=required'
-  end
-
-  if ldap_connect(username,password)
-    redirect '/'
-  else
-    redirect '/login?result=failed'
-  end
+  session[settings.username_session_key] = nil
+  redirect settings.cas_base_url
 end

@@ -56,7 +56,7 @@
 <div class="container">
 		<%= yield %>
 		<span style="font-size:14px;"><%= Time.now.strftime("%m/%d/%Y at %I:%M%p") %></span>
-	<% if $logged_in %><p><a href="/logout">Logout</a> of <%= session[:username] %></p><% end %>
+	<p><a href="/logout">Logout</a> of <%= session[settings.username_session_key] %></p>
 </div>
 
 <script>

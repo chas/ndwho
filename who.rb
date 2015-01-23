@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'net-ldap'
 require 'sinatra/cas/client'
+require './duo_web'
 
 enable :sessions
 enable :logging
@@ -13,9 +14,6 @@ register Sinatra::CAS::Client
   set :console_debugging, true
 
   set :port, 443
-
-  # was erroring out in local run - testing
-  # set :protection, :except => :session_hijacking
 
 error do
   '' + request.env['sinatra.error'].message
@@ -52,6 +50,7 @@ end
   :base => "o=University of Notre Dame,st=Indiana,c=US",
   :encryption => :simple_tls,
   :auth => { 
+    # TODO: Bind to service DN to override privacy
     :method => :anonymous
   }
 
@@ -84,16 +83,6 @@ end
 #     false
 #   end
 # end
-
-def check_login
-  if authenticated?
-    # Do you want to come back to my place?
-    true
-  else
-    # "My hovercraft is full of eels."
-    authenticate
-  end
-end
 
 get '/' do
   check_login
@@ -168,7 +157,57 @@ get '/xls' do
   erb :xls, :layout => false
 end
 
+def check_login
+  if session['username']
+    # Do you want to come back to my place?
+    true
+  else
+    if authenticated?
+      # puts "Authenticated as #{session ['username']}, sending to DUO two factor"
+      redirect '/duo'
+    else
+      # "My hovercraft is full of eels."
+      puts "Sending to CAS authentication"
+      authenticate
+    end
+  end
+end
+
+get '/duo' do
+  # DUO Documentation
+  # https://www.duosecurity.com/docs/duoweb
+
+  ikey = ""
+  akey = ""
+  skey = ""
+  @hostname = ""
+  username = "#{session[settings.username_session_key]}"
+
+  puts "Sign request: #{skey}, #{ikey}, #{username}"
+  @sig_request = Duo.sign_request(ikey, skey, akey, username)
+  erb :duo
+end
+
+post '/duo' do
+  # TODO: de-dupe Duo stuff
+  ikey = ""
+  akey = ""
+  skey = ""
+  @hostname = ""
+  username = "#{session[settings.username_session_key]}"
+
+  sig_response = params["sig_response"]
+  authenticated_username = Duo.verify_response(ikey, skey, akey, sig_response)
+  if authenticated_username
+    session['username'] = session[settings.username_session_key]
+    redirect '/'
+  else
+    redirect '/duo'
+  end
+end
+
 get '/logout' do
+  session["username"] = nil
   session[settings.username_session_key] = nil
   redirect settings.cas_base_url
 end

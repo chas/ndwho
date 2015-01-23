@@ -1,0 +1,10 @@
+<script src="/Duo-Web-v1.min.js"></script>
+<script>
+  Duo.init({
+    'host': '<%= @hostname %>',
+    'sig_request': '<%= @sig_request %>',
+    'post_action': ''
+  });
+</script>
+
+<iframe id="duo_iframe" width="620" height="330" frameborder="0"></iframe>
